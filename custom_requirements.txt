@@ -14,7 +14,7 @@ PyYAML
 safetensors
 wandb
 accelerate
-triton
+triton --index-url https://download.pytorch.org/whl/cu118
 gradio
 plyfile==0.8.1
 xformers==0.0.20
