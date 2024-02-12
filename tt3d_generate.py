@@ -65,7 +65,16 @@ def _generate(
     #
 
     try:
-        subprocess.check_call([sys.executable, "train.py", "--opt", str(tmp_config_filepath)])
+        subprocess.check_call([
+            sys.executable,
+            "train.py",
+            "--opt",
+            str(tmp_config_filepath),
+            "--test_ratio",
+            "1",
+            "--save_ratio",
+            "1",
+        ])
     except Exception as e:
         print(str(e))
 
