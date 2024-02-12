@@ -6,6 +6,8 @@ import argparse
 import torch
 import yaml
 import os
+import subprocess
+import sys
 
 from copy import deepcopy
 
@@ -56,10 +58,15 @@ def _generate(
     # config['GuidanceParams']['guidance_scale'] = cfg
     config['ModelParams']['workspace'] = prompt_enc
 
-    #
-
     with open(tmp_config_path, "w", encoding="utf-8") as file:
         yaml.dump(config, file)
+
+    #
+
+    try:
+        subprocess.check_call([sys.executable, train_path, "--opt", config_path])
+    except Exception as e:
+        print(str(e))
 
 
 ###
