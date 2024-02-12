@@ -75,7 +75,7 @@ def _generate(
     config['GenerateCamParams']['init_shape'] = 'sphere'
 
     if use_priors and prompt_config is not None:
-        if "init_shape" in prompt_config and "init_prompt" in prompt_config["init_prompt"]:
+        if "init_shape" in prompt_config and "init_prompt" in prompt_config:
             config['GenerateCamParams']['init_shape'] = prompt_config["init_shape"]
             config['GenerateCamParams']['init_prompt'] = prompt_config["init_prompt"]
 
