@@ -81,10 +81,12 @@ def _generate(
     #
 
     # import open3d as o3d
-
-    # tmp_export_path = tmp_output_path.joinpath(prompt_enc, f"iteration_{train_steps}")
+    # tmp_export_path = tmp_output_path.joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
     # tmp_ply_filepath = tmp_export_path.joinpath("point_cloud.ply")
     # tmp_obj_filepath = tmp_export_path.joinpath("model.obj")
+    # assert tmp_ply_filepath.exists() and tmp_ply_filepath.is_file()
+    # pcd = o3d.io.read_point_cloud(str(tmp_ply_filepath))
+    # o3d.visualization.draw_plotly([pcd])
 
 
 ###
