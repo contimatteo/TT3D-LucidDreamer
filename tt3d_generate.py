@@ -121,7 +121,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--prompt-file', type=Path, required=True)
     parser.add_argument('--out-path', type=Path, required=True)
-    parser.add_argument("--train-steps", type=str, required=True)
+    parser.add_argument("--train-steps", type=int, required=True)
     # parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument("--skip-existing", action="store_true", default=False)
 
