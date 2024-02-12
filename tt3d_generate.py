@@ -152,6 +152,7 @@ def main(
 
         print("")
         print(prompt)
+        print(prompt_config)
 
         _generate(
             prompt=prompt,
