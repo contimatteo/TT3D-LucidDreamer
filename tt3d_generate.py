@@ -8,6 +8,7 @@ import yaml
 import os
 import subprocess
 import sys
+import warnings
 
 from copy import deepcopy
 
@@ -37,6 +38,7 @@ def _generate(
     prompt: str,
     out_rootpath: Path,
     train_steps: int,
+    use_priors: bool,
     skip_existing: bool,
     prompt_config: Optional[dict] = None,
 ) -> None:
@@ -53,6 +55,15 @@ def _generate(
 
     #
 
+    if use_priors and prompt_config is None:
+        print("")
+        warnings.warn(f"Priors are enabled but no priors config was provided for '{prompt}'.")
+        print("")
+    if not use_priors and prompt_config is not None:
+        print("")
+        warnings.warn(f"Priors are disabled but a priors config was provided for '{prompt}'.")
+        print("")
+
     config = _load_default_config()
     config['GuidanceParams']['text'] = prompt
     config['ModelParams']['workspace'] = prompt_enc
@@ -60,10 +71,10 @@ def _generate(
     # config['GuidanceParams']['negative'] = neg_prompt
     # config['GuidanceParams']['noise_seed'] = seed
     # config['GuidanceParams']['guidance_scale'] = cfg
-
     config['GenerateCamParams']['init_prompt'] = '.'
     config['GenerateCamParams']['init_shape'] = 'sphere'
-    if prompt_config is not None:
+
+    if use_priors and prompt_config is not None:
         if "init_shape" in prompt_config and "init_prompt" in prompt_config["init_prompt"]:
             config['GenerateCamParams']['init_shape'] = prompt_config["init_shape"]
             config['GenerateCamParams']['init_prompt'] = prompt_config["init_prompt"]
@@ -106,6 +117,7 @@ def main(
     out_rootpath: Path,
     # batch_size: int,
     train_steps: int,
+    use_priors: bool,
     skip_existing: bool,
 ) -> None:
     assert isinstance(prompt_filepath, Path)
@@ -113,6 +125,7 @@ def main(
     # assert isinstance(batch_size, int)
     assert isinstance(train_steps, int)
     assert 0 < train_steps < 10000
+    assert isinstance(use_priors, bool)
     assert isinstance(skip_existing, bool)
 
     if out_rootpath.exists():
@@ -144,6 +157,7 @@ def main(
             prompt=prompt,
             out_rootpath=out_rootpath,
             train_steps=train_steps,
+            use_priors=use_priors,
             skip_existing=skip_existing,
             prompt_config=prompt_config,
         )
@@ -161,6 +175,7 @@ if __name__ == '__main__':
     parser.add_argument('--out-path', type=Path, required=True)
     parser.add_argument("--train-steps", type=int, required=True)
     # parser.add_argument('--batch-size', type=int, default=1)
+    parser.add_argument("--use-priors", action="store_true", default=True)
     parser.add_argument("--skip-existing", action="store_true", default=False)
 
     args = parser.parse_args()
@@ -172,5 +187,6 @@ if __name__ == '__main__':
         out_rootpath=args.out_path,
         # batch_size=args.batch_size,
         train_steps=args.train_steps,
+        use_priors=args.use_priors,
         skip_existing=args.skip_existing,
     )
