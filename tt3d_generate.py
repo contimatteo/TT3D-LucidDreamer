@@ -78,6 +78,14 @@ def _generate(
     except Exception as e:
         print(str(e))
 
+    #
+
+    # import open3d as o3d
+
+    # tmp_export_path = tmp_output_path.joinpath(prompt_enc, f"iteration_{train_steps}")
+    # tmp_ply_filepath = tmp_export_path.joinpath("point_cloud.ply")
+    # tmp_obj_filepath = tmp_export_path.joinpath("model.obj")
+
 
 ###
 
