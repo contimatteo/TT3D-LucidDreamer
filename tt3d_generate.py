@@ -59,6 +59,8 @@ def _generate(
     with open(tmp_config_path, "w", encoding="utf-8") as file:
         yaml.dump(config, file)
 
+    return
+
     #
 
     try:
