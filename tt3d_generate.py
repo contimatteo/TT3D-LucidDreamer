@@ -43,7 +43,10 @@ def _generate(
 
     tmp_root_path = Path(os.path.join(os.path.dirname(__file__)))
     tmp_output_path = tmp_root_path.joinpath('output')
-    tmp_config_path = tmp_output_path.joinpath(f"{prompt_enc}.yaml")
+    tmp_config_filepath = tmp_output_path.joinpath(f"{prompt_enc}.yaml")
+
+    if tmp_config_filepath.exists():
+        tmp_config_filepath.unlink()
 
     #
 
@@ -56,15 +59,13 @@ def _generate(
     config['ModelParams']['workspace'] = prompt_enc
     config['OptimizationParams']['iterations'] = train_steps
 
-    with open(tmp_config_path, "w", encoding="utf-8") as file:
+    with open(tmp_config_filepath, "w", encoding="utf-8") as file:
         yaml.dump(config, file)
-
-    return
 
     #
 
     try:
-        subprocess.check_call([sys.executable, "train.py", "--opt", str(tmp_config_path)])
+        subprocess.check_call([sys.executable, "train.py", "--opt", str(tmp_config_filepath)])
     except Exception as e:
         print(str(e))
 
