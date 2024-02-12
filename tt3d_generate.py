@@ -1,5 +1,5 @@
 ### pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,wrong-import-order
-from typing import Tuple, Any
+from typing import Tuple, Any, Optional
 from pathlib import Path
 
 import argparse
@@ -38,7 +38,10 @@ def _generate(
     out_rootpath: Path,
     train_steps: int,
     skip_existing: bool,
+    prompt_config: Optional[dict] = None,
 ) -> None:
+    assert prompt_config is None or isinstance(prompt_config, dict)
+
     prompt_enc = Utils.Prompt.encode(prompt)
 
     tmp_root_path = Path(os.path.join(os.path.dirname(__file__)))
@@ -51,13 +54,19 @@ def _generate(
     #
 
     config = _load_default_config()
-
     config['GuidanceParams']['text'] = prompt
+    config['ModelParams']['workspace'] = prompt_enc
+    config['OptimizationParams']['iterations'] = train_steps
     # config['GuidanceParams']['negative'] = neg_prompt
     # config['GuidanceParams']['noise_seed'] = seed
     # config['GuidanceParams']['guidance_scale'] = cfg
-    config['ModelParams']['workspace'] = prompt_enc
-    config['OptimizationParams']['iterations'] = train_steps
+
+    config['GenerateCamParams']['init_prompt'] = '.'
+    config['GenerateCamParams']['init_shape'] = 'sphere'
+    if prompt_config is not None:
+        if "init_shape" in prompt_config and "init_prompt" in prompt_config["init_prompt"]:
+            config['GenerateCamParams']['init_shape'] = prompt_config["init_shape"]
+            config['GenerateCamParams']['init_prompt'] = prompt_config["init_prompt"]
 
     with open(tmp_config_filepath, "w", encoding="utf-8") as file:
         yaml.dump(config, file)
@@ -114,11 +123,19 @@ def main(
     #
 
     prompts = Utils.Prompt.extract_from_file(filepath=prompt_filepath)
+    model_config = Utils.Prompt.extract_model_config_from_prompt_filepath(
+        model="luciddreamer",
+        prompt_filepath=prompt_filepath,
+    )
+    model_config = model_config if model_config is not None else {}
 
     print("")
     for prompt in prompts:
         if not isinstance(prompt, str) or len(prompt) < 2:
             continue
+
+        prompt_enc = Utils.Prompt.encode(prompt)
+        prompt_config = model_config.get(prompt_enc, model_config.get("*", None))
 
         print("")
         print(prompt)
@@ -128,6 +145,7 @@ def main(
             out_rootpath=out_rootpath,
             train_steps=train_steps,
             skip_existing=skip_existing,
+            prompt_config=prompt_config,
         )
 
         print("")

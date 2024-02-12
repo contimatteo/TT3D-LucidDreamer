@@ -4,12 +4,12 @@ exit 1
 
 
 GPU=0
-PROMPT="test_t3bench_n1"
+PROMPT="test_t3bench_n4"
 
 ROOT_DIR="/media/data2/mconti/TT3D"
 OUT_DIR="${ROOT_DIR}/outputs/${PROMPT}"
 PROMPT_DIR="${ROOT_DIR}/prompts"
-PROMPT_FILE="${PROMPT_DIR}/${PROMPT}.txt"
+PROMPT_FILE="${PROMPT_DIR}/${PROMPT}/prompt.txt"
 
 
 ###

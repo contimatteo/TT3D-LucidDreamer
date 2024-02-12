@@ -1,0 +1,18 @@
+{
+  "A_cactus_with_pink_flowers": {
+    "init_shape": "pointe",
+    "init_prompt": "A cactus"
+  },
+  "An_ivory_candlestick_holder": {
+    "init_shape": "pointe",
+    "init_prompt": "A candlestick"
+  },
+  "A_bright_red_fire_hydrant": {
+    "init_shape": "pointe",
+    "init_prompt": "A hydrant"
+  },
+  "An_antique_wooden_rocking_horse": {
+    "init_shape": "pointe",
+    "init_prompt": "A horse"
+  }
+}
