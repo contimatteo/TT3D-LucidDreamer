@@ -4,12 +4,63 @@ from pathlib import Path
 
 import argparse
 import torch
+import yaml
+import os
 
-from utils import Utils
+from copy import deepcopy
+
+from tt3d_utils import Utils
 
 ###
 
 device = Utils.Cuda.init()
+
+###
+
+
+def _load_default_config() -> dict:
+    path = Path("./configs/default.yaml")
+
+    assert isinstance(path, Path)
+    assert path.exists()
+    assert path.is_file()
+
+    with open(path, "r", encoding="utf-8") as file:
+        config = yaml.safe_load(file)
+
+    return deepcopy(config)
+
+
+def _generate(
+    prompt: str,
+    out_rootpath: Path,
+    skip_existing: bool,
+) -> None:
+    assert isinstance(prompt, str)
+    assert isinstance(out_rootpath, Path)
+    assert isinstance(skip_existing, bool)
+
+    prompt_enc = Utils.Prompt.encode(prompt)
+
+    tmp_root_path = Path(os.path.join(os.path.dirname(__file__)))
+    tmp_output_path = tmp_root_path.joinpath('output')
+    tmp_config_path = tmp_output_path.joinpath(f"{prompt_enc}.yaml")
+
+    #
+
+    config = _load_default_config()
+
+    config['GuidanceParams']['text'] = prompt
+    # config['GuidanceParams']['negative'] = neg_prompt
+    # config['GuidanceParams']['noise_seed'] = seed
+    # config['GuidanceParams']['guidance_scale'] = cfg
+    config['ModelParams']['workspace'] = prompt_enc
+
+    #
+
+    with open(tmp_config_path, "w", encoding="utf-8") as file:
+        yaml.dump(config, file)
+
 
 ###
 
@@ -37,13 +88,11 @@ def main(prompt_filepath: Path, out_rootpath: Path, batch_size: int, skip_existi
         print("")
         print(prompt)
 
-        # _generate_latents(
-        #     prompt=prompt,
-        #     out_rootpath=out_rootpath,
-        #     sampler=sampler,
-        #     skip_existing=skip_existing,
-        #     batch_size=batch_size,
-        # )
+        _generate(
+            prompt=prompt,
+            out_rootpath=out_rootpath,
+            skip_existing=skip_existing,
+        )
         print("")
     print("")
 
