@@ -18,4 +18,5 @@ PROMPT_FILE="${PROMPT_DIR}/${PROMPT}.txt"
 CUDA_VISIBLE_DEVICES=${GPU} python3 tt3d_generate.py \
   --prompt-file $PROMPT_FILE \
   --out-path "${OUT_DIR}/LucidDreamer/" \
+  --train-steps=200 \
   --skip-existing

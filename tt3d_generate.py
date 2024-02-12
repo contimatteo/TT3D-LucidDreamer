@@ -36,12 +36,9 @@ def _load_default_config() -> dict:
 def _generate(
     prompt: str,
     out_rootpath: Path,
+    train_steps: int,
     skip_existing: bool,
 ) -> None:
-    assert isinstance(prompt, str)
-    assert isinstance(out_rootpath, Path)
-    assert isinstance(skip_existing, bool)
-
     prompt_enc = Utils.Prompt.encode(prompt)
 
     tmp_root_path = Path(os.path.join(os.path.dirname(__file__)))
@@ -57,6 +54,7 @@ def _generate(
     # config['GuidanceParams']['noise_seed'] = seed
     # config['GuidanceParams']['guidance_scale'] = cfg
     config['ModelParams']['workspace'] = prompt_enc
+    config['OptimizationParams']['iterations'] = train_steps
 
     with open(tmp_config_path, "w", encoding="utf-8") as file:
         yaml.dump(config, file)
@@ -72,10 +70,18 @@ def _generate(
 ###
 
 
-def main(prompt_filepath: Path, out_rootpath: Path, batch_size: int, skip_existing: bool) -> None:
+def main(
+    prompt_filepath: Path,
+    out_rootpath: Path,
+    # batch_size: int,
+    train_steps: int,
+    skip_existing: bool,
+) -> None:
     assert isinstance(prompt_filepath, Path)
     assert isinstance(out_rootpath, Path)
-    assert isinstance(batch_size, int)
+    # assert isinstance(batch_size, int)
+    assert isinstance(train_steps, int)
+    assert 0 < train_steps < 10000
     assert isinstance(skip_existing, bool)
 
     if out_rootpath.exists():
@@ -98,6 +104,7 @@ def main(prompt_filepath: Path, out_rootpath: Path, batch_size: int, skip_existi
         _generate(
             prompt=prompt,
             out_rootpath=out_rootpath,
+            train_steps=train_steps,
             skip_existing=skip_existing,
         )
 
@@ -112,7 +119,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--prompt-file', type=Path, required=True)
     parser.add_argument('--out-path', type=Path, required=True)
-    parser.add_argument('--batch-size', type=int, default=1)
+    parser.add_argument("--train-steps", type=str, required=True)
+    # parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument("--skip-existing", action="store_true", default=False)
 
     args = parser.parse_args()
@@ -122,6 +130,7 @@ if __name__ == '__main__':
     main(
         prompt_filepath=args.prompt_file,
         out_rootpath=args.out_path,
-        batch_size=args.batch_size,
+        # batch_size=args.batch_size,
+        train_steps=args.train_steps,
         skip_existing=args.skip_existing,
     )
