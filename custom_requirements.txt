@@ -18,5 +18,6 @@ accelerate
 gradio
 plyfile==0.8.1
 xformers==0.0.20
+open3d
 
 git+https://github.com/openai/point-e.git

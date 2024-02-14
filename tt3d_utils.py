@@ -1,8 +1,9 @@
 ### pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,wrong-import-order
-from typing import Tuple, List, Literal
+from typing import Tuple, List, Literal, Dict, Optional
 
 import os
 import torch
+import json
 
 from pathlib import Path
 
@@ -90,13 +91,27 @@ class _Prompt():
 
         with open(filepath, "r", encoding="utf-8") as f:
             prompts = f.readlines()
-
         prompts = map(lambda p: p.strip(), prompts)
         prompts = filter(lambda p: len(p) > 1, prompts)
         ### TODO: filter out prompts with special chars ...
         prompts = list(prompts)
 
         return prompts
+
+    @staticmethod
+    def extract_model_config_from_prompt_filepath(model: str, prompt_filepath: Path) -> Optional[dict]:
+        assert isinstance(prompt_filepath, Path)
+        assert prompt_filepath.exists()
+        assert prompt_filepath.is_file()
+        assert prompt_filepath.suffix == ".txt"
+
+        model_config_filepath = prompt_filepath.parent.joinpath(f"{model}.json")
+
+        if not model_config_filepath.exists() or not model_config_filepath.is_file():
+            return None
+
+        with open(model_config_filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
 
 
 ###

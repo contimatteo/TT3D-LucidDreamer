@@ -1,5 +1,5 @@
 port: 2355
-save_video: true
+save_video: false
 seed: 0
 
 PipelineParams:
