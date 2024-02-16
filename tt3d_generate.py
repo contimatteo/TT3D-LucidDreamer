@@ -9,6 +9,7 @@ import os
 import subprocess
 import sys
 import warnings
+import open3d as o3d
 
 from copy import deepcopy
 
@@ -64,6 +65,8 @@ def _generate(
         warnings.warn(f"Priors are disabled but a priors config was provided for '{prompt}'.")
         print("")
 
+    assert not (use_priors and prompt_config is None)
+
     config = _load_default_config()
     config['GuidanceParams']['text'] = prompt
     config['ModelParams']['workspace'] = prompt_enc
@@ -84,23 +87,22 @@ def _generate(
 
     #
 
-    try:
-        subprocess.check_call([
-            sys.executable,
-            "train.py",
-            "--opt",
-            str(tmp_config_filepath),
-            "--test_ratio",
-            "1",
-            "--save_ratio",
-            "1",
-        ])
-    except Exception as e:
-        print(str(e))
+    # try:
+    subprocess.check_call([
+        sys.executable,
+        "train.py",
+        "--opt",
+        str(tmp_config_filepath),
+        "--test_ratio",
+        "1",
+        "--save_ratio",
+        "1",
+    ])
+    # except Exception as e:
+    #     print(str(e))
 
     #
 
-    # import open3d as o3d
     # tmp_export_path = tmp_output_path.joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
     # tmp_ply_filepath = tmp_export_path.joinpath("point_cloud.ply")
     # tmp_obj_filepath = tmp_export_path.joinpath("model.obj")
@@ -154,14 +156,25 @@ def main(
         print(prompt)
         print(prompt_config)
 
-        _generate(
-            prompt=prompt,
-            out_rootpath=out_rootpath,
-            train_steps=train_steps,
-            use_priors=use_priors,
-            skip_existing=skip_existing,
-            prompt_config=prompt_config,
-        )
+        try:
+            _generate(
+                prompt=prompt,
+                out_rootpath=out_rootpath,
+                train_steps=train_steps,
+                use_priors=use_priors,
+                skip_existing=skip_existing,
+                prompt_config=prompt_config,
+            )
+        except Exception as e:
+            print("")
+            print("")
+            print("========================================")
+            print("Error while running prompt -> ", prompt)
+            print(e)
+            print("========================================")
+            print("")
+            print("")
+            continue
 
         print("")
     print("")
