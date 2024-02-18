@@ -1,0 +1,402 @@
+{
+  "A_bent_steel_crowbar": {
+    "init_shape": "pointe",
+    "init_prompt": "A crowbar"
+  },
+  "A_blooming_potted_orchid_with_purple_flowers": {
+    "init_shape": "pointe",
+    "init_prompt": "An orchid"
+  },
+  "A_bright,_yellow_rubber_duck": {
+    "init_shape": "pointe",
+    "init_prompt": "A rubber duck"
+  },
+  "A_bright_blue_plastic_swimming_goggles": {
+    "init_shape": "pointe",
+    "init_prompt": "A swimming goggles"
+  },
+  "A_bright_red_fire_hydrant": {
+    "init_shape": "pointe",
+    "init_prompt": "A fire hydrant"
+  },
+  "A_bright_red_kite_with_a_frayed_tail": {
+    "init_shape": "pointe",
+    "init_prompt": "A kite"
+  },
+  "A_cactus_with_pink_flowers": {
+    "init_shape": "pointe",
+    "init_prompt": "A cactus"
+  },
+  "A_castle-shaped_sandcastle": {
+    "init_shape": "pointe",
+    "init_prompt": "A sandcastle"
+  },
+  "A_ceramic_teapot_with_floral_patterns": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_chameleon_perched_on_a_tree_branch": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_cherry_red_vintage_lipstick_tube": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_chipped,_white_coffee_mug": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_chipped_porcelain_teacup": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_classic_leatherette_radio_with_dials": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_cobweb-covered_old_wooden_chest": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_cracked_porcelain_doll's_face": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_crisp_paper_airplane": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_crumpled_silver_aluminum_soda_can": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_crystal_glass_paperweight_with_abstract_design": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_delicate,_handmade_lace_doily": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_delicate_crystal_champagne_flute": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_dented_brass_trumpet": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_dusty_classic_typewriter": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_faux-fur_leopard_print_hat": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_fluffy,_orange_cat": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_fragrant_pine_Christmas_wreath": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_futuristic,_sleek_electric_car_model": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_fuzzy_pink_flamingo_lawn_ornament": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_gleaming_silver_saxophone": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_glossy_grand_black_piano": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_gold_glittery_carnival_mask": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_golden_retriever_with_a_blue_bowtie": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_green_enameled_watering_can": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_leather-bound_book_with_gold_details": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_left-handed_electric_guitar_painted_black": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_long_woolen_scarf,_striped_red_and_black": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_neon_green_skateboard_with_black_wheels": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_paint-splattered_easel": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_pair_of_polka-dotted_sneakers": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_pair_of_shiny_black_patent_leather_shoes": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_pair_of_worn-in_blue_jeans": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_partly_broken_shell_of_a_tortoise": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_pirate_flag_with_skull_and_crossbones": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_plush_teddy_bear_with_a_satin_bow": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_plush_velvet_armchair": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_polished_mahogany_grand_piano": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_pristine_white_wedding_gown": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_rainbow-colored_umbrella": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_ripe_watermelon_sliced_in_half": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_rustic_wrought-iron_candle_holder": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_rusty,_abandoned_bicycle": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_rusty,_vintage_metal_key": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_scuffed_up_soccer_ball": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_shimmering_emerald_pendant_necklace": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_shiny,_new_electric_guitar": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_shiny_emerald_green_beetle": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_shiny_red_apple": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_silver_mirror_with_ornate_detailing": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_simple_burgundy_colored_feather_quill": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_sleek,_black_top_hat": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_sleek,_slim_smartphone": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_sleek_stainless_steel_teapot": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_small_porcelain_white_rabbit_figurine": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_smooth,_round_opal_stone": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_sparkling_crystal_chandelier": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_sparkling_diamond_ring_in_a_velvet_box": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_sparkling_diamond_tiara": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_steaming_mug_of_hot_chocolate_with_whipped_cream": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_sturdy_mahogany_walking_cane": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_tarnished_brass_pocket_watch": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_tarnished_silver_letter_opener": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_tattered_old_explorer’s_map": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_tattered_world_map_with_stained_edges": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_thick,_green-spined_book_with_yellowed_pages": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_velvet_cushion_stitched_with_golden_threads": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_vibrant,_handmade_patchwork_quilt": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_vibrant_sunflower_with_green_leaves": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_vintage_iron-cast_typewriter": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_vintage_plaid_woolen_blanket": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_vintage_porcelain_doll_with_a_frilly_dress": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_water-streaked_glass_window_pane": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_weather-beaten_wooden_bat": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_well-loved_stuffed_teddy_bear": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_well-used_black_iron_frying_pan": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_well-worn_straw_sun_hat": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_wet,_vibrant_beach_ball": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_worn-out_leather_briefcase": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_worn-out_red_flannel_shirt": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "A_worn-out_rubber_tire_swing": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_antique_glass_perfume_bottle": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_antique_gold_pocket_watch": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_antique_ruby-studded_brooch": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_antique_wooden_rocking_horse": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_elegant_feather-quill_ink_pen": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_intricate_ceramic_vase_with_peonies_painted_on_it": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_intricately-carved_wooden_chess_set": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_ivory_candlestick_holder": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_old,_frayed_straw_hat": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "An_old_bronze_ship's_wheel": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  },
+  "Crisp,_folded_origami_paper": {
+    "init_shape": "pointe",
+    "init_prompt": ""
+  }
+}

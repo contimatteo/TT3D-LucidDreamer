@@ -81,8 +81,15 @@ def _generate(
 
     if use_priors and prompt_config is not None:
         if "init_shape" in prompt_config and "init_prompt" in prompt_config:
-            config['GenerateCamParams']['init_shape'] = prompt_config["init_shape"]
-            config['GenerateCamParams']['init_prompt'] = prompt_config["init_prompt"]
+            init_shape = prompt_config["init_shape"]
+            init_prompt = prompt_config["init_prompt"]
+            assert isinstance(init_shape, str)
+            assert len(init_shape) > 0
+            assert init_shape in ["sphere", "pointe"]
+            assert isinstance(init_prompt, str)
+            assert len(init_prompt) > 1
+            config['GenerateCamParams']['init_shape'] = init_shape
+            config['GenerateCamParams']['init_prompt'] = init_prompt
 
     with open(tmp_config_filepath, "w", encoding="utf-8") as file:
         yaml.dump(config, file)

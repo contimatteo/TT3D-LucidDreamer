@@ -1,6 +1,6 @@
 port: 2355
 save_video: false
-seed: 0
+seed: 42
 
 PipelineParams:
   convert_SHs_python: False #true = using direct rgb
