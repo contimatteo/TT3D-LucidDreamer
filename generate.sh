@@ -22,6 +22,8 @@ export HF_HUB_OFFLINE=1
 ###
 
 
+rm -rf ./output
+
 CUDA_VISIBLE_DEVICES=${GPU} python3 tt3d_generate.py \
   --prompt-file $PROMPT_FILE \
   --out-path "${OUT_DIR}/LucidDreamer/" \
