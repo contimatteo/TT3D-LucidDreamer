@@ -12,6 +12,7 @@ import warnings
 import open3d as o3d
 import time
 import gc
+import traceback
 
 from copy import deepcopy
 
@@ -183,7 +184,7 @@ def main(
             print("")
             print("========================================")
             print("Error while running prompt -> ", prompt)
-            print(e)
+            print(''.join(traceback.format_exception(type(e), e, e.__traceback__)))
             print("========================================")
             print("")
             print("")
