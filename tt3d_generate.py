@@ -10,6 +10,8 @@ import subprocess
 import sys
 import warnings
 import open3d as o3d
+import time
+import gc
 
 from copy import deepcopy
 
@@ -87,8 +89,7 @@ def _generate(
 
     #
 
-    # try:
-    subprocess.check_call([
+    _ = subprocess.check_call([
         sys.executable,
         "train.py",
         "--opt",
@@ -98,8 +99,13 @@ def _generate(
         "--save_ratio",
         "1",
     ])
-    # except Exception as e:
-    #     print(str(e))
+
+    #
+
+    time.sleep(5)
+    torch.cuda.empty_cache()
+    gc.collect()
+    time.sleep(5)
 
     #
 
