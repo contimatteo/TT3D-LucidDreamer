@@ -3,13 +3,20 @@
 exit 1
 
 
-GPU=0
-PROMPT="test_t3bench_n4"
+GPU=1
+ENV="test"
+PROMPT="n4"
+EXPERIMENT_PREFIX="t3bench/single"
 
 ROOT_DIR="/media/data2/mconti/TT3D"
-OUT_DIR="${ROOT_DIR}/outputs/${PROMPT}"
-PROMPT_DIR="${ROOT_DIR}/prompts"
-PROMPT_FILE="${PROMPT_DIR}/${PROMPT}/prompts.txt"
+OUT_DIR="${ROOT_DIR}/outputs/${ENV}/${EXPERIMENT_PREFIX}/${PROMPT}"
+PROMPT_FILE="${ROOT_DIR}/prompts/${EXPERIMENT_PREFIX}/${PROMPT}.txt"
+
+
+export TRANSFORMERS_OFFLINE=1
+export DIFFUSERS_OFFLINE=1
+export HF_DATASETS_OFFLINE=1
+export HF_HUB_OFFLINE=1
 
 
 ###
