@@ -13,7 +13,10 @@ import open3d as o3d
 import time
 import gc
 import traceback
+import numpy as np
+import trimesh
 
+from trimesh.exchange.obj import export_obj as trimesh_export_obj
 from copy import deepcopy
 
 from tt3d_utils import Utils
@@ -111,12 +114,61 @@ def _generate(
 
     #
 
+    ### INFO: we have two files:
+    ###   - point_cloud.ply (the point cloud)
+    ###   - point_cloud_rgb.txt (the colors of each point in the point cloud)
+
+    #########################################################################################################
+    #########################################################################################################
+
     # tmp_export_path = tmp_output_path.joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
+    tmp_export_path = Path("./output").joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
     # tmp_ply_filepath = tmp_export_path.joinpath("point_cloud.ply")
-    # tmp_obj_filepath = tmp_export_path.joinpath("model.obj")
+    tmp_ply_colors_filepath = tmp_export_path.joinpath("point_cloud_rgb.txt")
+    tmp_obj_filepath = tmp_export_path.joinpath("model.obj")
+
     # assert tmp_ply_filepath.exists() and tmp_ply_filepath.is_file()
-    # pcd = o3d.io.read_point_cloud(str(tmp_ply_filepath))
-    # o3d.visualization.draw_plotly([pcd])
+    assert tmp_ply_colors_filepath.exists() and tmp_ply_colors_filepath.is_file()
+
+    ### load the point cloud and the colors.
+    pcd = o3d.io.read_point_cloud(str(tmp_ply_colors_filepath), format='xyzrgb')
+
+    assert not pcd.is_empty()
+    assert pcd.has_points()
+    assert pcd.has_colors()
+
+    ### compute normals
+    pcd.estimate_normals()
+    ### to obtain a consistent normal orientation
+    pcd.orient_normals_towards_camera_location(pcd.get_center())
+    ### you might want to flip the normals to make them point outward, not mandatory
+    # pcd.normals = o3d.utility.Vector3dVector( - np.asarray(pcd.normals))
+
+    assert pcd.has_normals()
+
+    ### surface reconstruction using Poisson reconstruction
+    o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
+    ### paint uniform color to better visualize, not mandatory
+    # mesh.paint_uniform_color(np.array([0.7, 0.7, 0.7]))
+    ### create the triangular mesh with the vertices and faces from open3d
+    # tri_mesh = trimesh.Trimesh(
+    #     np.asarray(o3d_mesh.vertices),
+    #     np.asarray(o3d_mesh.triangles),
+    #     vertex_normals=np.asarray(o3d_mesh.vertex_normals),
+    #     vertex_colors=np.asarray(o3d_mesh.vertex_colors),
+    # )
+
+    assert not o3d_mesh.is_empty()
+    assert o3d_mesh.has_vertices()
+    assert o3d_mesh.has_vertex_colors()
+
+    ### OPEN3D: save the mesh to a file
+    o3d.io.write_triangle_mesh(str(tmp_obj_filepath), o3d_mesh, write_triangle_uvs=True, print_progress=True)
+    ### TRIMESH: save the mesh to a file
+    # trimesh.exchange.export.export_mesh(tri_mesh, str(tmp_obj_filepath), include_texture=True)
+
+    #########################################################################################################
+    #########################################################################################################
 
 
 ###
