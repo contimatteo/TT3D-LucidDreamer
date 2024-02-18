@@ -569,10 +569,12 @@ if __name__ == "__main__":
         gcp.device = args.device
 
     # save iterations
-    test_iter = [1] + [k * op.iterations // args.test_ratio for k in range(1, args.test_ratio)] + [op.iterations]
+    # test_iter = [1] + [k * op.iterations // args.test_ratio for k in range(1, args.test_ratio)] + [op.iterations]
+    test_iter = [op.iterations]
     args.test_iterations = test_iter
 
-    save_iter = [k * op.iterations // args.save_ratio for k in range(1, args.save_ratio)] + [op.iterations]
+    # save_iter = [k * op.iterations // args.save_ratio for k in range(1, args.save_ratio)] + [op.iterations]
+    save_iter = [op.iterations]
     args.save_iterations = save_iter
 
     print('Test iter:', args.test_iterations)

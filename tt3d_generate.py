@@ -98,18 +98,9 @@ def _generate(
 
     #
 
-    _ = subprocess.check_call([
-        sys.executable,
-        "train.py",
-        "--opt",
-        str(tmp_config_filepath),
-        "--test_ratio",
-        "1",
-        "--save_ratio",
-        "1",
-        "--seed",
-        "42",
-    ])
+    # "--test_ratio", "1",
+    # "--save_ratio", "1",
+    _ = subprocess.check_call([sys.executable, "train.py", "--opt", str(tmp_config_filepath), "--seed", "42"])
 
     #
 
