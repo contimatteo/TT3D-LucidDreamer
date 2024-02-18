@@ -8,3 +8,4 @@ pip install ninja
 pip install -r custom_requirements.txt 
 pip install submodules/diff-gaussian-rasterization/
 pip install submodules/simple-knn/
+pip install trimesh
