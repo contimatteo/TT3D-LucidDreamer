@@ -92,7 +92,8 @@ def _generate(
             config['GenerateCamParams']['init_shape'] = init_shape
             config['GenerateCamParams']['init_prompt'] = init_prompt
 
-    with open(tmp_config_filepath, "w", encoding="utf-8") as file:
+    tmp_config_filepath.parent.mkdir(exist_ok=True, parents=True)
+    with open(tmp_config_filepath, "w+", encoding="utf-8") as file:
         yaml.dump(config, file)
 
     #
