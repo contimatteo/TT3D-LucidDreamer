@@ -17,7 +17,7 @@
   },
   "A_bright_red_fire_hydrant": {
     "init_shape": "pointe",
-    "init_prompt": "A fire hydrant"
+    "init_prompt": "A hydrant"
   },
   "A_bright_red_kite_with_a_frayed_tail": {
     "init_shape": "pointe",
@@ -369,7 +369,7 @@
   },
   "An_antique_wooden_rocking_horse": {
     "init_shape": "pointe",
-    "init_prompt": ""
+    "init_prompt": "A horse"
   },
   "An_elegant_feather-quill_ink_pen": {
     "init_shape": "pointe",
@@ -385,7 +385,7 @@
   },
   "An_ivory_candlestick_holder": {
     "init_shape": "pointe",
-    "init_prompt": ""
+    "init_prompt": "A candlestick"
   },
   "An_old,_frayed_straw_hat": {
     "init_shape": "pointe",
