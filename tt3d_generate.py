@@ -105,6 +105,8 @@ def _generate(
         "1",
         "--save_ratio",
         "1",
+        "--seed",
+        "42",
     ])
 
     #
@@ -130,14 +132,12 @@ def _generate(
 def main(
     prompt_filepath: Path,
     out_rootpath: Path,
-    # batch_size: int,
     train_steps: int,
     use_priors: bool,
     skip_existing: bool,
 ) -> None:
     assert isinstance(prompt_filepath, Path)
     assert isinstance(out_rootpath, Path)
-    # assert isinstance(batch_size, int)
     assert isinstance(train_steps, int)
     assert 0 < train_steps < 10000
     assert isinstance(use_priors, bool)
@@ -201,7 +201,6 @@ if __name__ == '__main__':
     parser.add_argument('--prompt-file', type=Path, required=True)
     parser.add_argument('--out-path', type=Path, required=True)
     parser.add_argument("--train-steps", type=int, required=True)
-    # parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument("--use-priors", action="store_true", default=True)
     parser.add_argument("--skip-existing", action="store_true", default=False)
 
@@ -212,7 +211,6 @@ if __name__ == '__main__':
     main(
         prompt_filepath=args.prompt_file,
         out_rootpath=args.out_path,
-        # batch_size=args.batch_size,
         train_steps=args.train_steps,
         use_priors=args.use_priors,
         skip_existing=args.skip_existing,
