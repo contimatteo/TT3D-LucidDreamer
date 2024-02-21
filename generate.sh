@@ -4,8 +4,8 @@ exit 1
 
 
 GPU=1
-ENV="test"
-PROMPT="n4"
+ENV="report"
+PROMPT="n100"
 EXPERIMENT_PREFIX="t3bench/single"
 
 ROOT_DIR="/media/data2/mconti/TT3D"
