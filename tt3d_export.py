@@ -2,6 +2,7 @@
 from typing import Tuple, Iterator
 from pathlib import Path
 
+import time
 import argparse
 import open3d as o3d
 # import trimesh
@@ -81,6 +82,7 @@ def _convert_pointcloud_to_obj(
 
     ### Open3D
 
+    _start = time.time()
     # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
     # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9, width=0, scale=1.1, linear_fit=False)
     o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd)
@@ -93,6 +95,7 @@ def _convert_pointcloud_to_obj(
         write_triangle_uvs=True,
         print_progress=True,
     )
+    print(f"ply-to-mesh completed in {time.time() - _start:.2f} seconds")
 
     ### Trimesh
 
