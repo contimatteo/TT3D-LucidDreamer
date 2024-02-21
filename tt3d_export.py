@@ -1,28 +1,17 @@
 ### pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,wrong-import-order
-from typing import Tuple, Any, List, Iterator
+from typing import Tuple, Iterator
 from pathlib import Path
 
 import argparse
-import torch
+import open3d as o3d
+# import trimesh
+# import numpy as np
 
-from pathlib import Path
-from point_e.diffusion.configs import DIFFUSION_CONFIGS
-from point_e.diffusion.configs import diffusion_from_config
-from point_e.diffusion.sampler import PointCloudSampler
-from point_e.models.download import load_checkpoint
-from point_e.models.configs import MODEL_CONFIGS
-from point_e.models.configs import model_from_config
-# from point_e.util.plotting import plot_point_cloud
-from point_e.util.point_cloud import PointCloud
-from point_e.util.pc_to_mesh import marching_cubes_mesh
-
-from utils import Utils
-from tt3d_generate import build_sampler
+from tt3d_utils import Utils
 
 ###
 
 T_Prompt = Tuple[str, Path]  ### pylint: disable=invalid-name
-# T_Prompts = List[T_Prompt]  ### pylint: disable=invalid-name
 T_Prompts = Iterator[T_Prompt]  ### pylint: disable=invalid-name
 
 device = Utils.Cuda.init()
@@ -35,7 +24,7 @@ def _load_prompts_from_source_path(source_rootpath: Path) -> T_Prompts:
     assert source_rootpath.exists()
     assert source_rootpath.is_dir()
 
-    experiment_path = Utils.Storage.build_experiment_path(out_rootpath=source_rootpath)
+    experiment_path = Utils.Storage.build_experiment_path(rootpath=source_rootpath)
 
     # for prompt_path in source_path.iterdir():
     for prompt_path in experiment_path.iterdir():
@@ -44,57 +33,81 @@ def _load_prompts_from_source_path(source_rootpath: Path) -> T_Prompts:
             yield (prompt_enc, prompt_path)
 
 
-def _convert_pointclouds_to_objs(
+def _convert_pointcloud_to_obj(
     prompt: str,
     source_rootpath: Path,
-    pointcloud: PointCloud,
-    model: Any,
     skip_existing: bool,
 ) -> None:
-    assert model is not None
-    assert isinstance(pointcloud, PointCloud)
-
-    out_ply_filepath = Utils.Storage.build_prompt_mesh_filepath(
-        out_rootpath=source_rootpath,
-        prompt=prompt,
-        assert_exists=False,
-        # idx=idx,
-        extension="ply",
-    )
     out_obj_filepath = Utils.Storage.build_prompt_mesh_filepath(
-        out_rootpath=source_rootpath,
+        rootpath=source_rootpath,
         prompt=prompt,
         assert_exists=False,
-        # idx=idx,
-        extension="obj",
     )
 
-    if skip_existing:
-        if out_ply_filepath.exists() and out_obj_filepath.exists():
+    if out_obj_filepath.exists():
+        if skip_existing:
             print("")
             print("mesh already exists -> ", out_obj_filepath)
             print("")
             return
+        else:
+            out_obj_filepath.unlink()
 
-    out_ply_filepath.parent.mkdir(parents=True, exist_ok=True)
     out_obj_filepath.parent.mkdir(parents=True, exist_ok=True)
 
     #
 
-    ### produce a mesh (with vertex colors)
-    mesh = marching_cubes_mesh(
-        pc=pointcloud,
-        model=model,
-        batch_size=4096,
-        # grid_size=32,  # increase to 128 for resolution used in evals
-        grid_size=128,
-        progress=True,
+    out_ply_filepath = Utils.Storage.build_prompt_pointcloud_filepath(
+        rootpath=source_rootpath,
+        prompt=prompt,
+        assert_exists=True,
     )
 
-    with open(out_ply_filepath, 'wb+') as f:
-        mesh.write_ply(f)
-    with open(out_obj_filepath, 'w+', encoding="utf-8") as f:
-        mesh.write_obj(f)
+    ### load the point cloud and the colors.
+    pcd = o3d.io.read_point_cloud(str(out_ply_filepath), format='xyzrgb')
+
+    assert not pcd.is_empty()
+    assert pcd.has_points()
+    assert pcd.has_colors()
+
+    ### compute normals
+    pcd.estimate_normals()
+    ### to obtain a consistent normal orientation
+    pcd.orient_normals_towards_camera_location(pcd.get_center())
+    ### you might want to flip the normals to make them point outward, not mandatory
+    # pcd.normals = o3d.utility.Vector3dVector( - np.asarray(pcd.normals))
+
+    assert pcd.has_normals()
+
+    ### Open3D
+
+    # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
+    # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9, width=0, scale=1.1, linear_fit=False)
+    o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd)
+    assert not o3d_mesh.is_empty()
+    assert o3d_mesh.has_vertices()
+    assert o3d_mesh.has_vertex_colors()
+    o3d.io.write_triangle_mesh(
+        str(out_obj_filepath),
+        o3d_mesh,
+        write_triangle_uvs=True,
+        print_progress=True,
+    )
+
+    ### Trimesh
+
+    ### INFO: create the mesh with the vertices and faces FROM OPEN3D
+    # tri_mesh = trimesh.Trimesh(
+    #     np.asarray(o3d_mesh.vertices),
+    #     np.asarray(o3d_mesh.triangles),
+    #     vertex_normals=np.asarray(o3d_mesh.vertex_normals),
+    #     vertex_colors=np.asarray(o3d_mesh.vertex_colors),
+    # )
+    # trimesh.exchange.export.export_mesh(
+    #     tri_mesh,
+    #     str(out_obj_filepath),
+    #     include_texture=True,
+    # )
 
 
 ###
@@ -121,12 +134,12 @@ def main(source_rootpath: Path, skip_existing: bool) -> None:
         print(prompt)
 
         try:
-            _convert_pointclouds_to_objs(
+            _convert_pointcloud_to_obj(
                 prompt=prompt,
                 source_rootpath=source_rootpath,
                 skip_existing=skip_existing,
             )
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             print("")
             print("")
             print("========================================")

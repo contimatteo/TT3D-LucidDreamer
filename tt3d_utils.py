@@ -1,5 +1,5 @@
 ### pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,wrong-import-order
-from typing import Tuple, List, Literal, Dict, Optional
+from typing import Tuple, List, Optional
 
 import os
 import torch
@@ -99,7 +99,10 @@ class _Prompt():
         return prompts
 
     @staticmethod
-    def extract_model_config_from_prompt_filepath(model: str, prompt_filepath: Path) -> Optional[dict]:
+    def extract_model_config_from_prompt_filepath(
+        model: str,
+        prompt_filepath: Path,
+    ) -> Optional[dict]:
         assert isinstance(prompt_filepath, Path)
         assert prompt_filepath.exists()
         assert prompt_filepath.is_file()
@@ -135,18 +138,12 @@ class _Storage():
         return out_path
 
     @classmethod
-    def build_prompt_export_path(cls, rootpath: Path, prompt: str, assert_exists: bool) -> Path:
-        out_prompt_path = cls.build_prompt_path(rootpath=rootpath, prompt=prompt)
-        out_path = out_prompt_path.joinpath("save", "export")
-
-        if assert_exists:
-            assert out_path.exists()
-            assert out_path.is_file()
-
-        return out_path
-
-    @classmethod
-    def build_prompt_pointcloud_filepath(cls, rootpath: Path, prompt: str, assert_exists: bool) -> Path:
+    def build_prompt_pointcloud_filepath(
+        cls,
+        rootpath: Path,
+        prompt: str,
+        assert_exists: bool,
+    ) -> Path:
         filename = "point_cloud_rgb.txt"
         out_prompt_path = cls.build_prompt_path(rootpath=rootpath, prompt=prompt)
         out_filepath = out_prompt_path.joinpath("pointcloud", filename)
@@ -156,6 +153,17 @@ class _Storage():
             assert out_filepath.is_file()
 
         return out_filepath
+
+    @classmethod
+    def build_prompt_export_path(cls, rootpath: Path, prompt: str, assert_exists: bool) -> Path:
+        out_prompt_path = cls.build_prompt_path(rootpath=rootpath, prompt=prompt)
+        out_path = out_prompt_path.joinpath("save", "export")
+
+        if assert_exists:
+            assert out_path.exists()
+            assert out_path.is_file()
+
+        return out_path
 
     @classmethod
     def build_prompt_mesh_filepath(cls, rootpath: Path, prompt: str, assert_exists: bool) -> Path:

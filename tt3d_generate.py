@@ -1,6 +1,7 @@
 ### pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,wrong-import-order
-from typing import Tuple, Any, Optional
+from typing import Optional
 from pathlib import Path
+from copy import deepcopy
 
 import argparse
 import torch
@@ -9,16 +10,12 @@ import os
 import subprocess
 import sys
 import warnings
-import open3d as o3d
 import time
 import gc
 import traceback
-import numpy as np
+# import numpy as np
 # import trimesh
 import shutil
-
-# from trimesh.exchange.obj import export_obj as trimesh_export_obj
-from copy import deepcopy
 
 from tt3d_utils import Utils
 
@@ -139,8 +136,8 @@ def _generate(
     gc.collect()
     time.sleep(5)
 
-    #########################################################################################################
-    #########################################################################################################
+    ###############################################################################################
+    ###############################################################################################
 
     tmp_source_prompt_path = tmp_source_rootpath.joinpath(prompt_enc)
     tmp_source_export_path = tmp_source_prompt_path.joinpath("point_cloud", f"iteration_{train_steps}")
@@ -155,26 +152,22 @@ def _generate(
     shutil.rmtree(tmp_out_prompt_path.joinpath("point_cloud"))
     shutil.rmtree(tmp_source_prompt_path)
 
-    #########################################################################################################
-    #########################################################################################################
+    ###############################################################################################
+    ###############################################################################################
 
     ### INFO: we have two files:
     ###   - point_cloud.ply (the point cloud)
     ###   - point_cloud_rgb.txt (the colors of each point in the point cloud)
 
-    #########################################################################################################
-    #########################################################################################################
+    ###############################################################################################
+    ###############################################################################################
 
-    # # tmp_export_path = tmp_output_path.joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
     # tmp_export_path = Path("./output").joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
-    # # tmp_ply_filepath = tmp_export_path.joinpath("point_cloud.ply")
     # tmp_ply_colors_filepath = tmp_export_path.joinpath("point_cloud_rgb.txt")
     # tmp_obj_filepath = tmp_export_path.joinpath("model.obj")
-
-    # # assert tmp_ply_filepath.exists() and tmp_ply_filepath.is_file()
     # assert tmp_ply_colors_filepath.exists() and tmp_ply_colors_filepath.is_file()
 
-    # ### load the point cloud and the colors.
+    ### load the point cloud and the colors.
     # pcd = o3d.io.read_point_cloud(str(tmp_ply_colors_filepath), format='xyzrgb')
 
     # assert not pcd.is_empty()
@@ -207,12 +200,14 @@ def _generate(
     # assert o3d_mesh.has_vertex_colors()
 
     # ### OPEN3D: save the mesh to a file
-    # o3d.io.write_triangle_mesh(str(tmp_obj_filepath), o3d_mesh, write_triangle_uvs=True, print_progress=True)
+    # o3d.io.write_triangle_mesh(
+    #   str(tmp_obj_filepath), o3d_mesh, write_triangle_uvs=True, print_progress=True
+    # )
     # ### TRIMESH: save the mesh to a file
     # # trimesh.exchange.export.export_mesh(tri_mesh, str(tmp_obj_filepath), include_texture=True)
 
-    # #########################################################################################################
-    # #########################################################################################################
+    # #############################################################################################
+    # #############################################################################################
 
 
 ###
@@ -267,7 +262,7 @@ def main(
                 skip_existing=skip_existing,
                 prompt_config=prompt_config,
             )
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             print("")
             print("")
             print("========================================")
