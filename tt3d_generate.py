@@ -14,9 +14,10 @@ import time
 import gc
 import traceback
 import numpy as np
-import trimesh
+# import trimesh
+import shutil
 
-from trimesh.exchange.obj import export_obj as trimesh_export_obj
+# from trimesh.exchange.obj import export_obj as trimesh_export_obj
 from copy import deepcopy
 
 from tt3d_utils import Utils
@@ -54,11 +55,11 @@ def _generate(
     prompt_enc = Utils.Prompt.encode(prompt)
 
     tmp_root_path = Path(os.path.join(os.path.dirname(__file__)))
-    tmp_output_path = tmp_root_path.joinpath('output')
-    tmp_config_filepath = tmp_output_path.joinpath(f"{prompt_enc}.yaml")
+    tmp_source_rootpath = tmp_root_path.joinpath('output')
+    tmp_source_config_filepath = tmp_source_rootpath.joinpath(f"{prompt_enc}.yaml")
 
-    if tmp_config_filepath.exists():
-        tmp_config_filepath.unlink()
+    if tmp_source_config_filepath.exists():
+        tmp_source_config_filepath.unlink()
 
     #
 
@@ -95,15 +96,22 @@ def _generate(
             config['GenerateCamParams']['init_shape'] = init_shape
             config['GenerateCamParams']['init_prompt'] = init_prompt
 
-    tmp_config_filepath.parent.mkdir(exist_ok=True, parents=True)
-    with open(tmp_config_filepath, "w+", encoding="utf-8") as file:
+    tmp_source_config_filepath.parent.mkdir(exist_ok=True, parents=True)
+    with open(tmp_source_config_filepath, "w+", encoding="utf-8") as file:
         yaml.dump(config, file)
 
     #
 
     # "--test_ratio", "1",
     # "--save_ratio", "1",
-    _ = subprocess.check_call([sys.executable, "train.py", "--opt", str(tmp_config_filepath), "--seed", "42"])
+    _ = subprocess.check_call([
+        sys.executable,
+        "train.py",
+        "--opt",
+        str(tmp_source_config_filepath),
+        "--seed",
+        "42",
+    ])
 
     #
 
@@ -112,7 +120,24 @@ def _generate(
     gc.collect()
     time.sleep(5)
 
-    #
+    #########################################################################################################
+    #########################################################################################################
+
+    tmp_source_prompt_path = tmp_source_rootpath.joinpath(prompt_enc)
+    tmp_source_export_path = tmp_source_prompt_path.joinpath("point_cloud", f"iteration_{train_steps}")
+    tmp_source_ply_filepath = tmp_source_export_path.joinpath("point_cloud.ply")
+    tmp_source_txt_filepath = tmp_source_export_path.joinpath("point_cloud_rgb.txt")
+
+    assert tmp_source_ply_filepath.exists() and tmp_source_ply_filepath.is_file()
+    assert tmp_source_txt_filepath.exists() and tmp_source_txt_filepath.is_file()
+
+    tmp_out_prompt_path = out_rootpath.joinpath(prompt_enc)
+    tmp_out_prompt_path.mkdir(parents=True, exist_ok=True)
+
+    shutil.copytree(tmp_source_prompt_path, tmp_out_prompt_path)
+
+    #########################################################################################################
+    #########################################################################################################
 
     ### INFO: we have two files:
     ###   - point_cloud.ply (the point cloud)
@@ -121,54 +146,54 @@ def _generate(
     #########################################################################################################
     #########################################################################################################
 
-    # tmp_export_path = tmp_output_path.joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
-    tmp_export_path = Path("./output").joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
-    # tmp_ply_filepath = tmp_export_path.joinpath("point_cloud.ply")
-    tmp_ply_colors_filepath = tmp_export_path.joinpath("point_cloud_rgb.txt")
-    tmp_obj_filepath = tmp_export_path.joinpath("model.obj")
+    # # tmp_export_path = tmp_output_path.joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
+    # tmp_export_path = Path("./output").joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
+    # # tmp_ply_filepath = tmp_export_path.joinpath("point_cloud.ply")
+    # tmp_ply_colors_filepath = tmp_export_path.joinpath("point_cloud_rgb.txt")
+    # tmp_obj_filepath = tmp_export_path.joinpath("model.obj")
 
-    # assert tmp_ply_filepath.exists() and tmp_ply_filepath.is_file()
-    assert tmp_ply_colors_filepath.exists() and tmp_ply_colors_filepath.is_file()
+    # # assert tmp_ply_filepath.exists() and tmp_ply_filepath.is_file()
+    # assert tmp_ply_colors_filepath.exists() and tmp_ply_colors_filepath.is_file()
 
-    ### load the point cloud and the colors.
-    pcd = o3d.io.read_point_cloud(str(tmp_ply_colors_filepath), format='xyzrgb')
+    # ### load the point cloud and the colors.
+    # pcd = o3d.io.read_point_cloud(str(tmp_ply_colors_filepath), format='xyzrgb')
 
-    assert not pcd.is_empty()
-    assert pcd.has_points()
-    assert pcd.has_colors()
+    # assert not pcd.is_empty()
+    # assert pcd.has_points()
+    # assert pcd.has_colors()
 
-    ### compute normals
-    pcd.estimate_normals()
-    ### to obtain a consistent normal orientation
-    pcd.orient_normals_towards_camera_location(pcd.get_center())
-    ### you might want to flip the normals to make them point outward, not mandatory
-    # pcd.normals = o3d.utility.Vector3dVector( - np.asarray(pcd.normals))
+    # ### compute normals
+    # pcd.estimate_normals()
+    # ### to obtain a consistent normal orientation
+    # pcd.orient_normals_towards_camera_location(pcd.get_center())
+    # ### you might want to flip the normals to make them point outward, not mandatory
+    # # pcd.normals = o3d.utility.Vector3dVector( - np.asarray(pcd.normals))
 
-    assert pcd.has_normals()
+    # assert pcd.has_normals()
 
-    ### surface reconstruction using Poisson reconstruction
-    o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
-    ### paint uniform color to better visualize, not mandatory
-    # mesh.paint_uniform_color(np.array([0.7, 0.7, 0.7]))
-    ### create the triangular mesh with the vertices and faces from open3d
-    # tri_mesh = trimesh.Trimesh(
-    #     np.asarray(o3d_mesh.vertices),
-    #     np.asarray(o3d_mesh.triangles),
-    #     vertex_normals=np.asarray(o3d_mesh.vertex_normals),
-    #     vertex_colors=np.asarray(o3d_mesh.vertex_colors),
-    # )
+    # ### surface reconstruction using Poisson reconstruction
+    # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
+    # ### paint uniform color to better visualize, not mandatory
+    # # mesh.paint_uniform_color(np.array([0.7, 0.7, 0.7]))
+    # ### create the triangular mesh with the vertices and faces from open3d
+    # # tri_mesh = trimesh.Trimesh(
+    # #     np.asarray(o3d_mesh.vertices),
+    # #     np.asarray(o3d_mesh.triangles),
+    # #     vertex_normals=np.asarray(o3d_mesh.vertex_normals),
+    # #     vertex_colors=np.asarray(o3d_mesh.vertex_colors),
+    # # )
 
-    assert not o3d_mesh.is_empty()
-    assert o3d_mesh.has_vertices()
-    assert o3d_mesh.has_vertex_colors()
+    # assert not o3d_mesh.is_empty()
+    # assert o3d_mesh.has_vertices()
+    # assert o3d_mesh.has_vertex_colors()
 
-    ### OPEN3D: save the mesh to a file
-    o3d.io.write_triangle_mesh(str(tmp_obj_filepath), o3d_mesh, write_triangle_uvs=True, print_progress=True)
-    ### TRIMESH: save the mesh to a file
-    # trimesh.exchange.export.export_mesh(tri_mesh, str(tmp_obj_filepath), include_texture=True)
+    # ### OPEN3D: save the mesh to a file
+    # o3d.io.write_triangle_mesh(str(tmp_obj_filepath), o3d_mesh, write_triangle_uvs=True, print_progress=True)
+    # ### TRIMESH: save the mesh to a file
+    # # trimesh.exchange.export.export_mesh(tri_mesh, str(tmp_obj_filepath), include_texture=True)
 
-    #########################################################################################################
-    #########################################################################################################
+    # #########################################################################################################
+    # #########################################################################################################
 
 
 ###
