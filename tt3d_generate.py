@@ -1,6 +1,7 @@
 ### pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,wrong-import-order
-from typing import Tuple, Any, Optional
+from typing import Optional
 from pathlib import Path
+from copy import deepcopy
 
 import argparse
 import torch
@@ -9,8 +10,12 @@ import os
 import subprocess
 import sys
 import warnings
-
-from copy import deepcopy
+import time
+import gc
+import traceback
+# import numpy as np
+# import trimesh
+import shutil
 
 from tt3d_utils import Utils
 
@@ -44,14 +49,33 @@ def _generate(
 ) -> None:
     assert prompt_config is None or isinstance(prompt_config, dict)
 
+    out_pointcloud_filepath = Utils.Storage.build_prompt_pointcloud_filepath(
+        rootpath=out_rootpath,
+        prompt=prompt,
+        assert_exists=False,
+    )
+    if skip_existing and out_pointcloud_filepath.exists():
+        print("")
+        print("========================================")
+        print("Path already exists -> ", out_pointcloud_filepath)
+        print("========================================")
+        print("")
+        return
+
+    tmp_out_prompt_path = Utils.Storage.build_prompt_path(rootpath=out_rootpath, prompt=prompt)
+    if tmp_out_prompt_path.exists():
+        shutil.rmtree(tmp_out_prompt_path)
+
+    #
+
     prompt_enc = Utils.Prompt.encode(prompt)
 
     tmp_root_path = Path(os.path.join(os.path.dirname(__file__)))
-    tmp_output_path = tmp_root_path.joinpath('output')
-    tmp_config_filepath = tmp_output_path.joinpath(f"{prompt_enc}.yaml")
+    tmp_source_rootpath = tmp_root_path.joinpath('output')
+    tmp_source_config_filepath = tmp_source_rootpath.joinpath(f"{prompt_enc}.yaml")
 
-    if tmp_config_filepath.exists():
-        tmp_config_filepath.unlink()
+    if tmp_source_config_filepath.exists():
+        tmp_source_config_filepath.unlink()
 
     #
 
@@ -63,6 +87,8 @@ def _generate(
         print("")
         warnings.warn(f"Priors are disabled but a priors config was provided for '{prompt}'.")
         print("")
+
+    assert not (use_priors and prompt_config is None)
 
     config = _load_default_config()
     config['GuidanceParams']['text'] = prompt
@@ -76,37 +102,112 @@ def _generate(
 
     if use_priors and prompt_config is not None:
         if "init_shape" in prompt_config and "init_prompt" in prompt_config:
-            config['GenerateCamParams']['init_shape'] = prompt_config["init_shape"]
-            config['GenerateCamParams']['init_prompt'] = prompt_config["init_prompt"]
+            init_shape = prompt_config["init_shape"]
+            init_prompt = prompt_config["init_prompt"]
+            assert isinstance(init_shape, str)
+            assert len(init_shape) > 0
+            assert init_shape in ["sphere", "pointe"]
+            assert isinstance(init_prompt, str)
+            assert len(init_prompt) > 1
+            config['GenerateCamParams']['init_shape'] = init_shape
+            config['GenerateCamParams']['init_prompt'] = init_prompt
 
-    with open(tmp_config_filepath, "w", encoding="utf-8") as file:
+    tmp_source_config_filepath.parent.mkdir(exist_ok=True, parents=True)
+    with open(tmp_source_config_filepath, "w+", encoding="utf-8") as file:
         yaml.dump(config, file)
 
     #
 
-    try:
-        subprocess.check_call([
-            sys.executable,
-            "train.py",
-            "--opt",
-            str(tmp_config_filepath),
-            "--test_ratio",
-            "1",
-            "--save_ratio",
-            "1",
-        ])
-    except Exception as e:
-        print(str(e))
+    # "--test_ratio", "1",
+    # "--save_ratio", "1",
+    _ = subprocess.check_call([
+        sys.executable,
+        "train.py",
+        "--opt",
+        str(tmp_source_config_filepath),
+        "--seed",
+        "42",
+    ])
 
     #
 
-    # import open3d as o3d
-    # tmp_export_path = tmp_output_path.joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
-    # tmp_ply_filepath = tmp_export_path.joinpath("point_cloud.ply")
+    time.sleep(5)
+    torch.cuda.empty_cache()
+    gc.collect()
+    time.sleep(5)
+
+    ###############################################################################################
+    ###############################################################################################
+
+    tmp_source_prompt_path = tmp_source_rootpath.joinpath(prompt_enc)
+    tmp_source_export_path = tmp_source_prompt_path.joinpath("point_cloud", f"iteration_{train_steps}")
+    tmp_source_ply_filepath = tmp_source_export_path.joinpath("point_cloud.ply")
+    tmp_source_txt_filepath = tmp_source_export_path.joinpath("point_cloud_rgb.txt")
+
+    assert tmp_source_ply_filepath.exists() and tmp_source_ply_filepath.is_file()
+    assert tmp_source_txt_filepath.exists() and tmp_source_txt_filepath.is_file()
+
+    shutil.copytree(tmp_source_prompt_path, tmp_out_prompt_path)
+    shutil.copytree(tmp_source_export_path, tmp_out_prompt_path.joinpath("pointcloud"))
+    shutil.rmtree(tmp_out_prompt_path.joinpath("point_cloud"))
+    shutil.rmtree(tmp_source_prompt_path)
+
+    ###############################################################################################
+    ###############################################################################################
+
+    ### INFO: we have two files:
+    ###   - point_cloud.ply (the point cloud)
+    ###   - point_cloud_rgb.txt (the colors of each point in the point cloud)
+
+    ###############################################################################################
+    ###############################################################################################
+
+    # tmp_export_path = Path("./output").joinpath(prompt_enc, "point_cloud", f"iteration_{train_steps}")
+    # tmp_ply_colors_filepath = tmp_export_path.joinpath("point_cloud_rgb.txt")
     # tmp_obj_filepath = tmp_export_path.joinpath("model.obj")
-    # assert tmp_ply_filepath.exists() and tmp_ply_filepath.is_file()
-    # pcd = o3d.io.read_point_cloud(str(tmp_ply_filepath))
-    # o3d.visualization.draw_plotly([pcd])
+    # assert tmp_ply_colors_filepath.exists() and tmp_ply_colors_filepath.is_file()
+
+    ### load the point cloud and the colors.
+    # pcd = o3d.io.read_point_cloud(str(tmp_ply_colors_filepath), format='xyzrgb')
+
+    # assert not pcd.is_empty()
+    # assert pcd.has_points()
+    # assert pcd.has_colors()
+
+    # ### compute normals
+    # pcd.estimate_normals()
+    # ### to obtain a consistent normal orientation
+    # pcd.orient_normals_towards_camera_location(pcd.get_center())
+    # ### you might want to flip the normals to make them point outward, not mandatory
+    # # pcd.normals = o3d.utility.Vector3dVector( - np.asarray(pcd.normals))
+
+    # assert pcd.has_normals()
+
+    # ### surface reconstruction using Poisson reconstruction
+    # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
+    # ### paint uniform color to better visualize, not mandatory
+    # # mesh.paint_uniform_color(np.array([0.7, 0.7, 0.7]))
+    # ### create the triangular mesh with the vertices and faces from open3d
+    # # tri_mesh = trimesh.Trimesh(
+    # #     np.asarray(o3d_mesh.vertices),
+    # #     np.asarray(o3d_mesh.triangles),
+    # #     vertex_normals=np.asarray(o3d_mesh.vertex_normals),
+    # #     vertex_colors=np.asarray(o3d_mesh.vertex_colors),
+    # # )
+
+    # assert not o3d_mesh.is_empty()
+    # assert o3d_mesh.has_vertices()
+    # assert o3d_mesh.has_vertex_colors()
+
+    # ### OPEN3D: save the mesh to a file
+    # o3d.io.write_triangle_mesh(
+    #   str(tmp_obj_filepath), o3d_mesh, write_triangle_uvs=True, print_progress=True
+    # )
+    # ### TRIMESH: save the mesh to a file
+    # # trimesh.exchange.export.export_mesh(tri_mesh, str(tmp_obj_filepath), include_texture=True)
+
+    # #############################################################################################
+    # #############################################################################################
 
 
 ###
@@ -115,14 +216,12 @@ def _generate(
 def main(
     prompt_filepath: Path,
     out_rootpath: Path,
-    # batch_size: int,
     train_steps: int,
     use_priors: bool,
     skip_existing: bool,
 ) -> None:
     assert isinstance(prompt_filepath, Path)
     assert isinstance(out_rootpath, Path)
-    # assert isinstance(batch_size, int)
     assert isinstance(train_steps, int)
     assert 0 < train_steps < 10000
     assert isinstance(use_priors, bool)
@@ -152,15 +251,27 @@ def main(
 
         print("")
         print(prompt)
+        print(prompt_config)
 
-        _generate(
-            prompt=prompt,
-            out_rootpath=out_rootpath,
-            train_steps=train_steps,
-            use_priors=use_priors,
-            skip_existing=skip_existing,
-            prompt_config=prompt_config,
-        )
+        try:
+            _generate(
+                prompt=prompt,
+                out_rootpath=out_rootpath,
+                train_steps=train_steps,
+                use_priors=use_priors,
+                skip_existing=skip_existing,
+                prompt_config=prompt_config,
+            )
+        except Exception as e:  # pylint: disable=broad-except
+            print("")
+            print("")
+            print("========================================")
+            print("Error while running prompt -> ", prompt)
+            print(''.join(traceback.format_exception(type(e), e, e.__traceback__)))
+            print("========================================")
+            print("")
+            print("")
+            continue
 
         print("")
     print("")
@@ -174,7 +285,6 @@ if __name__ == '__main__':
     parser.add_argument('--prompt-file', type=Path, required=True)
     parser.add_argument('--out-path', type=Path, required=True)
     parser.add_argument("--train-steps", type=int, required=True)
-    # parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument("--use-priors", action="store_true", default=True)
     parser.add_argument("--skip-existing", action="store_true", default=False)
 
@@ -185,7 +295,6 @@ if __name__ == '__main__':
     main(
         prompt_filepath=args.prompt_file,
         out_rootpath=args.out_path,
-        # batch_size=args.batch_size,
         train_steps=args.train_steps,
         use_priors=args.use_priors,
         skip_existing=args.skip_existing,

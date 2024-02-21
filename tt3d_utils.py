@@ -1,5 +1,5 @@
 ### pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,wrong-import-order
-from typing import Tuple, List, Literal, Dict, Optional
+from typing import Tuple, List, Optional
 
 import os
 import torch
@@ -99,7 +99,10 @@ class _Prompt():
         return prompts
 
     @staticmethod
-    def extract_model_config_from_prompt_filepath(model: str, prompt_filepath: Path) -> Optional[dict]:
+    def extract_model_config_from_prompt_filepath(
+        model: str,
+        prompt_filepath: Path,
+    ) -> Optional[dict]:
         assert isinstance(prompt_filepath, Path)
         assert prompt_filepath.exists()
         assert prompt_filepath.is_file()
@@ -118,52 +121,65 @@ class _Prompt():
 
 
 class _Storage():
+    MODEL_VERSION: str = "luciddreamer"
 
-    @staticmethod
-    def build_prompt_latents_filepath(
-        out_rootpath: Path,
+    @classmethod
+    def build_experiment_path(cls, rootpath: Path) -> Path:
+        out_path = rootpath.joinpath(cls.MODEL_VERSION)
+        return out_path
+
+    @classmethod
+    def build_prompt_path(cls, rootpath: Path, prompt: str) -> Path:
+        assert isinstance(prompt, str)
+        assert "_" not in prompt
+        prompt_dirname = Utils.Prompt.encode(prompt)
+        experiment_path = cls.build_experiment_path(rootpath=rootpath)
+        out_path = experiment_path.joinpath(prompt_dirname)
+        return out_path
+
+    @classmethod
+    def build_prompt_pointcloud_filepath(
+        cls,
+        rootpath: Path,
         prompt: str,
         assert_exists: bool,
     ) -> Path:
-        assert "_" not in prompt
-
-        filename = "latents.pt"
-        prompt_dirname = Utils.Prompt.encode(prompt)
-
-        out_prompt_path = out_rootpath.joinpath(prompt_dirname)
-        out_prompt_ckpts_path = out_prompt_path.joinpath("ckpts")
-        out_prompt_latents_filepath = out_prompt_ckpts_path.joinpath(filename)
+        filename = "point_cloud_rgb.txt"
+        out_prompt_path = cls.build_prompt_path(rootpath=rootpath, prompt=prompt)
+        out_filepath = out_prompt_path.joinpath("pointcloud", filename)
 
         if assert_exists:
-            assert out_prompt_latents_filepath.exists()
-            assert out_prompt_latents_filepath.is_file()
+            assert out_filepath.exists()
+            assert out_filepath.is_file()
 
-        return out_prompt_latents_filepath
+        return out_filepath
 
-    @staticmethod
-    def build_prompt_mesh_filepath(
-        out_rootpath: Path,
-        prompt: str,
-        assert_exists: bool,
-        idx: int,
-        extension: Literal["obj", "ply"],
-    ) -> Path:
-        assert "_" not in prompt
-        assert isinstance(idx, int)
-        assert idx >= 0
-        assert isinstance(extension, str)
-        assert extension in ["obj", "ply"]
-
-        filename = f"model_{idx}.{extension}"
-        prompt_dirname = Utils.Prompt.encode(prompt)
-
-        out_path = out_rootpath.joinpath(prompt_dirname, "save", "export", filename)
+    @classmethod
+    def build_prompt_export_path(cls, rootpath: Path, prompt: str, assert_exists: bool) -> Path:
+        out_prompt_path = cls.build_prompt_path(rootpath=rootpath, prompt=prompt)
+        out_path = out_prompt_path.joinpath("save", "export")
 
         if assert_exists:
             assert out_path.exists()
             assert out_path.is_file()
 
         return out_path
+
+    @classmethod
+    def build_prompt_mesh_filepath(cls, rootpath: Path, prompt: str, assert_exists: bool) -> Path:
+        filename = "model.obj"
+        out_export_path = cls.build_prompt_export_path(
+            rootpath=rootpath,
+            prompt=prompt,
+            assert_exists=False,
+        )
+        out_filepath = out_export_path.joinpath(filename)
+
+        if assert_exists:
+            assert out_filepath.exists()
+            assert out_filepath.is_file()
+
+        return out_filepath
 
 
 ###
