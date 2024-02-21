@@ -5,7 +5,7 @@
   },
   "A_blooming_potted_orchid_with_purple_flowers": {
     "init_shape": "pointe",
-    "init_prompt": "An orchid"
+    "init_prompt": "A blooming orchid"
   },
   "A_bright,_yellow_rubber_duck": {
     "init_shape": "pointe",
@@ -33,7 +33,7 @@
   },
   "A_ceramic_teapot_with_floral_patterns": {
     "init_shape": "pointe",
-    "init_prompt": "A teapot"
+    "init_prompt": "A ceramic teapot"
   },
   "A_chameleon_perched_on_a_tree_branch": {
     "init_shape": "pointe",
@@ -49,7 +49,7 @@
   },
   "A_chipped_porcelain_teacup": {
     "init_shape": "pointe",
-    "init_prompt": "A teacup"
+    "init_prompt": "A porcelain teacup"
   },
   "A_classic_leatherette_radio_with_dials": {
     "init_shape": "pointe",
@@ -61,7 +61,7 @@
   },
   "A_cracked_porcelain_doll's_face": {
     "init_shape": "pointe",
-    "init_prompt": "A doll's face"
+    "init_prompt": "A doll face"
   },
   "A_crisp_paper_airplane": {
     "init_shape": "pointe",
@@ -73,7 +73,7 @@
   },
   "A_crystal_glass_paperweight_with_abstract_design": {
     "init_shape": "pointe",
-    "init_prompt": "A paperweight"
+    "init_prompt": "A glass paperweight"
   },
   "A_delicate,_handmade_lace_doily": {
     "init_shape": "pointe",
