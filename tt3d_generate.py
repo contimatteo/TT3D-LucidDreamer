@@ -131,8 +131,8 @@ def _generate(
     assert tmp_source_ply_filepath.exists() and tmp_source_ply_filepath.is_file()
     assert tmp_source_txt_filepath.exists() and tmp_source_txt_filepath.is_file()
 
-    tmp_out_prompt_path = Utils.Storage.build_prompt_path(rootpath=out_rootpath, prompt=prompt_enc)
-    tmp_out_prompt_path.mkdir(parents=True, exist_ok=True)
+    tmp_out_prompt_path = Utils.Storage.build_prompt_path(rootpath=out_rootpath, prompt=prompt)
+    # tmp_out_prompt_path.mkdir(parents=True, exist_ok=True)
 
     shutil.copytree(tmp_source_prompt_path, tmp_out_prompt_path)
 
