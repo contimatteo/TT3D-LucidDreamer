@@ -85,7 +85,7 @@ def _convert_pointcloud_to_obj(
     _start = time.time()
     # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
     # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9, width=0, scale=1.1, linear_fit=False)
-    o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd)
+    o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=8, linear_fit=True)
     assert not o3d_mesh.is_empty()
     assert o3d_mesh.has_vertices()
     assert o3d_mesh.has_vertex_colors()
