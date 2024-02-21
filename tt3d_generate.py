@@ -52,6 +52,22 @@ def _generate(
 ) -> None:
     assert prompt_config is None or isinstance(prompt_config, dict)
 
+    out_pointcloud_filepath = Utils.Storage.build_prompt_pointcloud_filepath(
+        rootpath=out_rootpath,
+        prompt=prompt,
+        assert_exists=False,
+    )
+
+    if skip_existing and out_pointcloud_filepath.exists():
+        print("")
+        print("========================================")
+        print("Path already exists -> ", out_pointcloud_filepath)
+        print("========================================")
+        print("")
+        return
+
+    #
+
     prompt_enc = Utils.Prompt.encode(prompt)
 
     tmp_root_path = Path(os.path.join(os.path.dirname(__file__)))
@@ -132,7 +148,6 @@ def _generate(
     assert tmp_source_txt_filepath.exists() and tmp_source_txt_filepath.is_file()
 
     tmp_out_prompt_path = Utils.Storage.build_prompt_path(rootpath=out_rootpath, prompt=prompt)
-    # tmp_out_prompt_path.mkdir(parents=True, exist_ok=True)
 
     shutil.copytree(tmp_source_prompt_path, tmp_out_prompt_path)
     shutil.copytree(tmp_source_export_path, tmp_out_prompt_path.joinpath("pointcloud"))

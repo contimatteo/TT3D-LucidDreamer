@@ -146,19 +146,10 @@ class _Storage():
         return out_path
 
     @classmethod
-    def build_prompt_pointcloud_filepath(
-        cls,
-        rootpath: Path,
-        prompt: str,
-        assert_exists: bool,
-    ) -> Path:
+    def build_prompt_pointcloud_filepath(cls, rootpath: Path, prompt: str, assert_exists: bool) -> Path:
         filename = "point_cloud_rgb.txt"
-        out_export_path = cls.build_prompt_export_path(
-            rootpath=rootpath,
-            prompt=prompt,
-            assert_exists=False,
-        )
-        out_filepath = out_export_path.joinpath(filename)
+        out_prompt_path = cls.build_prompt_path(rootpath=rootpath, prompt=prompt)
+        out_filepath = out_prompt_path.joinpath("pointcloud", filename)
 
         if assert_exists:
             assert out_filepath.exists()
