@@ -14,7 +14,7 @@ from tt3d_utils import Utils
 T_Prompt = Tuple[str, Path]  ### pylint: disable=invalid-name
 T_Prompts = Iterator[T_Prompt]  ### pylint: disable=invalid-name
 
-device = Utils.Cuda.init()
+# device = Utils.Cuda.init()
 
 ###
 
