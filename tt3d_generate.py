@@ -57,7 +57,6 @@ def _generate(
         prompt=prompt,
         assert_exists=False,
     )
-
     if skip_existing and out_pointcloud_filepath.exists():
         print("")
         print("========================================")
@@ -65,6 +64,10 @@ def _generate(
         print("========================================")
         print("")
         return
+
+    tmp_out_prompt_path = Utils.Storage.build_prompt_path(rootpath=out_rootpath, prompt=prompt)
+    if tmp_out_prompt_path.exists():
+        shutil.rmtree(tmp_out_prompt_path)
 
     #
 
@@ -146,8 +149,6 @@ def _generate(
 
     assert tmp_source_ply_filepath.exists() and tmp_source_ply_filepath.is_file()
     assert tmp_source_txt_filepath.exists() and tmp_source_txt_filepath.is_file()
-
-    tmp_out_prompt_path = Utils.Storage.build_prompt_path(rootpath=out_rootpath, prompt=prompt)
 
     shutil.copytree(tmp_source_prompt_path, tmp_out_prompt_path)
     shutil.copytree(tmp_source_export_path, tmp_out_prompt_path.joinpath("pointcloud"))
