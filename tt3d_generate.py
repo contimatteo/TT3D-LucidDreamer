@@ -153,6 +153,7 @@ def _generate(
     shutil.copytree(tmp_source_prompt_path, tmp_out_prompt_path)
     shutil.copytree(tmp_source_export_path, tmp_out_prompt_path.joinpath("pointcloud"))
     shutil.rmtree(tmp_out_prompt_path.joinpath("point_cloud"))
+    shutil.rmtree(tmp_source_prompt_path)
 
     #########################################################################################################
     #########################################################################################################
