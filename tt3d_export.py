@@ -136,6 +136,10 @@ def main(source_rootpath: Path, skip_existing: bool) -> None:
         print("")
         print(prompt)
 
+        ### INFO: this prompt causes a segmentation fault error.
+        if "cobweb-covered old wooden chest" in prompt:
+            continue
+
         try:
             _convert_pointcloud_to_obj(
                 prompt=prompt,
