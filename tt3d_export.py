@@ -2,6 +2,7 @@
 from typing import Tuple, Iterator
 from pathlib import Path
 
+import time
 import argparse
 import open3d as o3d
 # import trimesh
@@ -14,7 +15,7 @@ from tt3d_utils import Utils
 T_Prompt = Tuple[str, Path]  ### pylint: disable=invalid-name
 T_Prompts = Iterator[T_Prompt]  ### pylint: disable=invalid-name
 
-device = Utils.Cuda.init()
+# device = Utils.Cuda.init()
 
 ###
 
@@ -81,9 +82,10 @@ def _convert_pointcloud_to_obj(
 
     ### Open3D
 
+    _start = time.time()
     # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
     # o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9, width=0, scale=1.1, linear_fit=False)
-    o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd)
+    o3d_mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=7, linear_fit=True)
     assert not o3d_mesh.is_empty()
     assert o3d_mesh.has_vertices()
     assert o3d_mesh.has_vertex_colors()
@@ -93,6 +95,7 @@ def _convert_pointcloud_to_obj(
         write_triangle_uvs=True,
         print_progress=True,
     )
+    print(f"ply-to-mesh completed in {time.time() - _start:.2f} seconds")
 
     ### Trimesh
 
@@ -132,6 +135,10 @@ def main(source_rootpath: Path, skip_existing: bool) -> None:
 
         print("")
         print(prompt)
+
+        ### INFO: this prompt causes a segmentation fault error.
+        if "cobweb-covered old wooden chest" in prompt:
+            continue
 
         try:
             _convert_pointcloud_to_obj(
