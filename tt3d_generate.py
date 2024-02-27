@@ -285,7 +285,7 @@ if __name__ == '__main__':
     parser.add_argument('--prompt-file', type=Path, required=True)
     parser.add_argument('--out-path', type=Path, required=True)
     parser.add_argument("--train-steps", type=int, required=True)
-    parser.add_argument("--use-priors", action="store_true", default=True)
+    parser.add_argument("--use-priors", action="store_true", default=False)
     parser.add_argument("--skip-existing", action="store_true", default=False)
 
     args = parser.parse_args()
